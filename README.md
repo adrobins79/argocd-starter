@@ -45,6 +45,7 @@ Adding Rollouts
 ```helm install argo-rollout-release --set dashboard.enabled=true argo/argo-rollouts -n argo-rollouts ```
 
 Open Dashboard
+Note: will be stuck loading until there is a rollout in the namespace
 
 ```kubectl port-forward -n argo-rollouts service/argo-rollout-release-argo-rollouts-dashboard 3100:3100```
 
