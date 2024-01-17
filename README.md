@@ -93,12 +93,58 @@ Add host entry
 
 ```127.0.0.1 rollouts-demo.local```
 
-```cd man``` (assumes pwd == project root)
-
 Create ingress
 
-```kubectl apply -n argo-rollouts -f ingress-rollouts-demo.yaml```
+```cd man``` (assumes pwd == project root)
+
+```kubectl apply -n argo-rollouts -f rollouts-demo-ingress.yaml```
 
 View demo app 
 
 ```open [Rollout demo](http://rollouts-demo.local:8080/)```
+
+
+Add Analysis Template
+
+```cd man``` (assumes pwd == project root)
+
+```kubectl apply -n argo-rollouts -f rollouts-demo-analysis.yaml```
+
+Replace rollout canary strategy with one that refers to the analysis template
+
+```
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause: {duration: 10}
+      - analysis:
+          templates:
+          - templateName: canary-check
+      - setWeight: 40
+      - pause: {duration: 10}
+      - setWeight: 60
+      - pause: {duration: 10}
+      - setWeight: 80
+      - pause: {duration: 10}
+```
+Apply rollout update
+
+```cd man``` (assumes pwd == project root)
+
+```kubectl apply -n argo-rollouts -f rollout.yaml```
+
+Check status of rollout
+
+```kubectl argo rollouts get rollout -n argo-rollouts rollouts-demo```
+
+Update rollout to watch progress
+
+Note: Change to opposite tag of what is currently deployed either blue or yellow
+
+```kubectl argo rollouts -n argo-rollouts set image rollouts-demo rollouts-demo=argoproj/rollouts-demo:yellow```
+
+Watch status of rollout 
+Note: Confirm analysis runs as expected
+
+```kubectl argo rollouts get rollout -n argo-rollouts rollouts-demo --watch```
