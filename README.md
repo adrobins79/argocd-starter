@@ -60,7 +60,7 @@ Deploy svc that references rollout
 
 ```cd man``` (assumes pwd == project root)
 
-```kubectl apply -n argo-rollouts -f service.yaml```
+```kubectl apply -n argo-rollouts -f rollouts-demo-service.yaml```
 
 Watch rollout
 
@@ -86,3 +86,19 @@ Note: its now paused at 20% for operator intervention
 Promote the new update to 100%
 
 ```kubectl argo rollouts -n argo-rollouts promote rollouts-demo```
+
+Add ingress to rollouts demo
+
+Add host entry 
+
+```127.0.0.1 rollouts-demo.local```
+
+```cd man``` (assumes pwd == project root)
+
+Create ingress
+
+```kubectl apply -n argo-rollouts -f ingress-rollouts-demo.yaml```
+
+View demo app 
+
+```open [Rollout demo](http://rollouts-demo.local:8080/)```
