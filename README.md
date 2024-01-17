@@ -1,9 +1,11 @@
 
 [Guide to ArgoCD and Kind](https://medium.com/@chirayukapoor/running-argo-cd-locally-with-kind-and-nginx-ingress-26b31cece300)
 
-Create [Cluster](https://kind.sigs.k8s.io/docs/user/configuration/)
+## Create [Cluster](https://kind.sigs.k8s.io/docs/user/configuration/)
 
 ```kind create cluster --config=kind-argocd.yaml```
+
+## Install Argo
 
 Add [Ingress](https://docs.nginx.com/nginx-ingress-controller/)
 
@@ -34,7 +36,7 @@ Open Admin
 
 ```kubectl create ns argo-rollouts```
 
-Adding Rollouts
+## Install Rollouts
 
 [Install Rollout CLI](https://argo-rollouts.readthedocs.io/en/stable/installation/)
 
@@ -93,6 +95,8 @@ Add host entry
 
 ```127.0.0.1 rollouts-demo.local```
 
+## Analysis template
+
 Create ingress
 
 ```cd man``` (assumes pwd == project root)
@@ -104,7 +108,7 @@ View demo app
 ```open [Rollout demo](http://rollouts-demo.local:8080/)```
 
 
-Add Analysis Template
+## Add Analysis Template
 
 ```cd man``` (assumes pwd == project root)
 
@@ -152,3 +156,45 @@ Note: Confirm analysis runs as expected
 Optionally Cancel Rollout
 
 ```kubectl argo rollouts abort -n argo-rollouts rollouts-demo```
+
+
+## Adding Variables to template 
+
+Change spec for AnalysisTemplate to accept and print args
+Note: Use appropiate indentation
+
+```
+spec:
+  args:
+  - name: stable-hash
+  - name: latest-hash
+  metrics:
+  .
+  .
+  .
+  containers:
+  - name: hello
+    image: busybox:latest
+    command: ['sh', '-c', 'echo "[Debug] Latest: {{ args.latest-hash }} Stable: {{ args.stable-hash }} Status: " && sleep 3600']              
+  restartPolicy: Never
+
+```
+
+Update Rollout to pass variables to analysis template
+Note: Use appropiate indentation
+
+```
+- analysis:
+    templates:
+    - templateName: canary-check
+    args:
+    # pod template hash from the stable ReplicaSet
+    - name: stable-hash
+      valueFrom:
+        podTemplateHashValue: Stable
+    # pod template hash from the latest ReplicaSet
+    - name: latest-hash
+      valueFrom:
+        podTemplateHashValue: Latest         
+
+```
