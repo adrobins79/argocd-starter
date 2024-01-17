@@ -148,3 +148,7 @@ Watch status of rollout
 Note: Confirm analysis runs as expected
 
 ```kubectl argo rollouts get rollout -n argo-rollouts rollouts-demo --watch```
+
+Optionally Cancel Rollout
+
+```kubectl argo rollouts abort -n argo-rollouts rollouts-demo```

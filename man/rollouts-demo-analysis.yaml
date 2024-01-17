@@ -3,6 +3,10 @@ apiVersion: argoproj.io/v1alpha1
 metadata:
   name: canary-check
 spec:
+  args:
+  - name: stable-hash
+  - name: latest-hash
+  #- name: rollout-status  
   metrics:
   - name: test
     provider:
@@ -11,8 +15,12 @@ spec:
           backoffLimit: 1
           template:
             spec:
+              # containers:
+              # - name: busybox
+              #   image: busybox
+              #   #args: [test]  #--> for making analysis fail, uncomment                     
               containers:
-              - name: busybox
-                image: busybox
-                #args: [test]  #--> for making analysis fail, uncomment
+              - name: hello
+                image: busybox:latest
+                command: ['sh', '-c', 'echo "[Debug] Latest: {{ args.latest-hash }} Stable: {{ args.stable-hash }} Status: " && sleep 3600']              
               restartPolicy: Never

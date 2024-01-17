@@ -12,6 +12,19 @@ spec:
       - analysis:
           templates:
           - templateName: canary-check
+          args:
+          # pod template hash from the stable ReplicaSet
+          - name: stable-hash
+            valueFrom:
+              podTemplateHashValue: Stable
+          # pod template hash from the latest ReplicaSet
+          - name: latest-hash
+            valueFrom:
+              podTemplateHashValue: Latest          
+          # - name: rollout-status
+          #   valueFrom:
+          #     fieldRef:
+          #       fieldPath: status.alb.canaryTargetGroup.name          
       - setWeight: 40
       - pause: {duration: 10}
       - setWeight: 60
